@@ -1,0 +1,27 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { env } from './config/env.js';
+import { authRouter } from './modules/auth/auth.routes.js';
+import { errorHandler, notFound } from './middleware/errorHandler.js';
+import { dealerRouter } from './modules/dealer/dealer.routes.js';
+import { dealerDocumentsRouter } from './modules/dealerDocuments/dealerDocuments.routes.js';
+import { dealerVerificationRouter } from './modules/dealerVerification/dealerVerification.routes.js';
+import { dashboardRouter } from './modules/dashboard/dashboard.routes.js';
+import { superAdminRouter } from './modules/superAdmin/superAdmin.routes.js';
+
+export const app = express();
+app.use(helmet());
+app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api/auth', authRouter);
+app.use('/api/dealers', dealerRouter);
+app.use('/api/dealers', dealerDocumentsRouter);
+app.use('/api/admin/dealers', dealerVerificationRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/super-admin', superAdminRouter);
+app.use(notFound);
+app.use(errorHandler);

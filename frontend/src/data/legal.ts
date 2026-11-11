@@ -1,0 +1,20 @@
+export const privacySections = [
+{ title: 'Scope', body: 'This policy describes how the platform handles information submitted by registered dealers and authorized administrative staff. The platform does not offer customer accounts; customer information is entered by dealers solely to prepare finance applications.' },
+{ title: 'Information we process', body: 'Dealer business details (business name, GSTIN, business PAN, address), owner and contact information, customer details entered by dealers for finance applications, uploaded documents, and activity records such as status changes and logins.' },
+{ title: 'How information is used', body: 'To verify dealers, prepare and track finance applications, share application information with the finance partner selected for a case, provide support and maintain audit records. Information is not sold.' },
+{ title: 'Sharing with finance partners', body: 'Application details and documents are shared only with the finance partner selected for that application, and only for evaluating that application. Each partner processes information under its own privacy policy.' },
+{ title: 'Sensitive information', body: 'The platform does not request or store card numbers, card PINs, CVVs or banking passwords. Identity numbers are masked in list views and documents are access-controlled.' },
+{ title: 'Retention', body: 'Records are retained for the period required by the platform operator’s legal, regulatory and contractual obligations, after which they are deleted or anonymized.' },
+{ title: 'Your choices', body: 'Dealers can request correction of their business information through the support desk. Requests regarding customer information should be routed through the dealer that submitted it.' },
+{ title: 'Contact', body: 'Questions about this policy can be sent to the support desk listed on the Contact page. This document is a draft template and must be reviewed by the operator’s legal counsel before publication.' }];
+
+
+export const termsSections = [
+{ title: 'Nature of the service', body: 'The platform is a dealer finance workflow and application management tool. It is not a bank, NBFC or lender and does not lend money, make credit decisions or guarantee approvals.' },
+{ title: 'Dealer eligibility', body: 'Dealer access is granted only after verification. The operator may request additional documents, decline registration or suspend access where information is incomplete, inaccurate or non-compliant.' },
+{ title: 'Dealer responsibilities', body: 'Dealers must obtain customer consent before entering customer information, submit accurate product and pricing details, and keep their login credentials confidential.' },
+{ title: 'Lender decisions', body: 'All eligibility, approval, interest, tenure, fees and disbursement decisions are made solely by the respective finance partner under its own terms. Status updates in the platform reflect information recorded by the operations team.' },
+{ title: 'Commission and payouts', body: 'Any commission or payout arrangement is governed by a separate signed commercial agreement. Figures shown in the platform are configured estimates and do not represent confirmed or received payments.' },
+{ title: 'Integrations', body: 'Direct integrations with banks, NBFCs, credit bureaus, eKYC or eSign providers require official partner approval and separate agreement, and are not part of the initial service unless agreed in writing.' },
+{ title: 'Limitation of liability', body: 'To the extent permitted by law, the operator is not liable for lender decisions, delays in lender processing or losses arising from inaccurate information submitted by users.' },
+{ title: 'Changes', body: 'These terms may be updated with notice to registered dealers. This document is a draft template and must be reviewed by legal counsel before publication.' }];

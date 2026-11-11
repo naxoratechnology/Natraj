@@ -1,0 +1,20 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { authenticate } from '../../middleware/authenticate.js';
+import { authorize } from '../../middleware/authorize.js';
+import { authorizePermission } from '../../middleware/authorizePermission.js';
+import { registrationUpload } from '../../middleware/registrationUpload.js';
+import { changePassword, forgotPassword, login, loginHistory, logout, me, refresh, register, resetPassword, setAccountStatus } from './auth.controller.js';
+
+export const authRouter = Router();
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 50, standardHeaders: 'draft-8', legacyHeaders: false });
+authRouter.post('/register', limiter, registrationUpload, register);
+authRouter.post('/login', limiter, login);
+authRouter.post('/refresh', limiter, refresh);
+authRouter.post('/logout', logout);
+authRouter.post('/forgot-password', limiter, forgotPassword);
+authRouter.post('/reset-password', limiter, resetPassword);
+authRouter.get('/me', authenticate, me);
+authRouter.post('/change-password', authenticate, changePassword);
+authRouter.get('/login-history', authenticate, loginHistory);
+authRouter.patch('/users/:userId/status', authenticate, authorize('admin', 'super_admin'), authorizePermission('dealers'), setAccountStatus);
