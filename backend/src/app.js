@@ -13,7 +13,18 @@ import { superAdminRouter } from './modules/superAdmin/superAdmin.routes.js';
 
 export const app = express();
 app.use(helmet());
-app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'https://natraj-mobile-electronics.vercel.app',
+  ...env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+]);
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.get('/', (req, res) => {
