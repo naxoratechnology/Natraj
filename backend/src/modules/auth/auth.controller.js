@@ -14,7 +14,7 @@ const REFRESH_COOKIE = 'refreshToken';
 const publicUser = (user) => ({ id: user.id, name: user.name, email: user.email, role: user.role, active: user.active, permissions: user.role === 'super_admin' ? ['*'] : user.permissions || [], accessRoleName: user.accessRoleName || '' });
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const requestMeta = (req) => ({ ip: req.ip || '', userAgent: req.get('user-agent') || '' });
-const cookieOptions = { httpOnly: true, sameSite: 'lax', secure: env.NODE_ENV === 'production', path: '/api/auth', maxAge: 7 * 24 * 60 * 60 * 1000 };
+const cookieOptions = { httpOnly: true, sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax', secure: env.NODE_ENV === 'production', path: '/api/auth', maxAge: 7 * 24 * 60 * 60 * 1000 };
 
 function rejectInvalid(result, res) {
   if (result.success) return false;

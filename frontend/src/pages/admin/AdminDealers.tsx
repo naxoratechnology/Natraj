@@ -11,7 +11,6 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { ageLabel, formatDate } from '../../utils/format';
 import type { Dealer, DealerStatus } from '../../types/finance';
 import { listBackendDealers, toUiDealer } from '../../services/dealers';
-import { useDemoData } from '../../contexts/DemoDataContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 const tabs: {id: string;label: string;statuses: DealerStatus[] | null;}[] = [
@@ -23,7 +22,6 @@ const tabs: {id: string;label: string;statuses: DealerStatus[] | null;}[] = [
 
 export function AdminDealers() {
   const navigate = useNavigate();
-  const { dealers: demoDealers } = useDemoData();
   const { user } = useAuth();
   const [params, setParams] = useSearchParams();
   const [databaseDealers, setDatabaseDealers] = useState<Dealer[]>([]);
@@ -35,7 +33,7 @@ export function AdminDealers() {
   useEffect(() => setTab(params.get('view') === 'verification' ? 'verification' : 'all'), [params]);
   useEffect(() => { listBackendDealers().then(({ dealers: rows }) => setDatabaseDealers(rows.map(toUiDealer))).catch(() => undefined); }, []);
 
-  const allDealers = databaseDealers.length ? databaseDealers : demoDealers;
+  const allDealers = databaseDealers;
   const portalBase = user?.role === 'super_admin' ? '/super-admin' : '/admin';
 
   const changeTab = (id: string) => {

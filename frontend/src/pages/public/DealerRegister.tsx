@@ -16,6 +16,7 @@ import { RegReviewStep } from '../../components/registration/RegReviewStep';
 import { type RegistrationData, type RegistrationErrors } from '../../types/registration';
 import { TODAY } from '../../utils/format';
 import { patterns } from '../../utils/validation';
+import { ApiError, register } from '../../services/auth';
 
 const STEPS = ['Owner & contact', 'Business details', 'GST & PAN', 'Documents', 'Review & submit'];
 const DRAFT_KEY = 'dealerRegistrationDraft';
@@ -124,7 +125,7 @@ export function DealerRegister() {
     });
   };
 
-  const next = () => {
+  const next = async () => {
     const nextErrors = validate(step, data);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) return;
@@ -134,14 +135,21 @@ export function DealerRegister() {
       return;
     }
     setSubmitting(true);
-    window.setTimeout(() => {
-      const suffix = typeof crypto !== 'undefined' && 'randomUUID' in crypto
-        ? crypto.randomUUID().slice(0, 8).toUpperCase()
-        : Date.now().toString(36).slice(-8).toUpperCase();
+    try {
+      const result = await register(data);
       sessionStorage.removeItem(DRAFT_KEY);
-      setReference(`DLR-${String(new Date().getFullYear()).slice(-2)}-${suffix}`);
+      setReference(result.reference);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setErrors(error.errors);
+        toast.error(error.message);
+      } else {
+        toast.error('Registration could not be submitted. Please try again.');
+      }
+    } finally {
       setSubmitting(false);
-    }, 500);
+    }
   };
 
   const stepProps = { data, errors, update };

@@ -9,13 +9,6 @@ export class ApiError extends Error {
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const LOCAL_AUTH_TOKEN = 'frontend-hardcoded-session';
-const fullAdminPermissions = ['dashboard', 'dealers', 'customers', 'applications', 'manual_processing', 'finance_partners', 'commissions', 'reports', 'notifications', 'support', 'audit_logs'];
-const hardcodedAccounts: Array<{ password: string; user: AuthUser }> = [
-  { password: 'admin123', user: { id: 'DEALER-DEMO', name: 'Natraj Dealer', email: 'dealer@gmail.com', role: 'dealer', active: true, permissions: [] } },
-  { password: 'admin123', user: { id: 'SUPER-ADMIN-DEMO', name: 'Natraj Super Admin', email: 'superadmin@natraj.com', role: 'super_admin', active: true, permissions: ['*'], accessRoleName: 'Super Admin' } },
-  { password: 'admin123', user: { id: 'ADMIN-DEMO', name: 'Natraj Operations Admin', email: 'admin@natrajmobile.com', role: 'admin', active: true, permissions: fullAdminPermissions, accessRoleName: 'Admin' } }
-];
 const notifyAuthChange = () => window.dispatchEvent(new Event('auth-changed'));
 const saveSession = (token: string, user: AuthUser) => {
   sessionStorage.setItem('authToken', token);
@@ -40,10 +33,14 @@ async function rawRequest<T>(path: string, options: RequestInit = {}): Promise<T
 }
 
 export async function refreshSession() {
-  const user = getStoredUser();
-  if (sessionStorage.getItem('authToken') === LOCAL_AUTH_TOKEN && user?.active) return user;
-  clearSession();
-  return null;
+  try {
+    const result = await rawRequest<{ token: string; user: AuthUser }>('/auth/refresh', { method: 'POST' });
+    saveSession(result.token, result.user);
+    return result.user;
+  } catch {
+    clearSession();
+    return null;
+  }
 }
 
 export async function authenticatedRequest<T>(path: string, options: RequestInit = {}, retry = true): Promise<T> {
@@ -57,14 +54,13 @@ export async function authenticatedRequest<T>(path: string, options: RequestInit
 }
 
 export async function login(email: string, password: string) {
-  const account = hardcodedAccounts.find((item) => item.user.email === email.trim().toLowerCase() && item.password === password);
-  await new Promise((resolve) => window.setTimeout(resolve, 300));
-  if (!account) throw new ApiError('The email or password is incorrect', {}, 401);
-  saveSession(LOCAL_AUTH_TOKEN, account.user);
-  return account.user;
+  const result = await rawRequest<{ token: string; user: AuthUser }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+  saveSession(result.token, result.user);
+  return result.user;
 }
 export async function logout() {
-  clearSession();
+  try { await rawRequest('/auth/logout', { method: 'POST' }); }
+  finally { clearSession(); }
 }
 export async function register(data: RegistrationData) {
   const form = new FormData();
@@ -83,6 +79,6 @@ export async function register(data: RegistrationData) {
     throw new ApiError('Unable to connect to the server. Please try again.');
   }
 }
-export const forgotPassword = async (_email: string) => ({ message: 'Password reset is unavailable in the frontend demo.' });
+export const forgotPassword = (email: string) => rawRequest<{ message: string }>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
 export const resetPassword = (token: string, password: string, confirmPassword: string) => rawRequest<{ message: string }>('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password, confirmPassword }) });
 export const changePassword = (currentPassword: string, newPassword: string, confirmPassword: string) => authenticatedRequest<{ message: string }>('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword, confirmPassword }) });

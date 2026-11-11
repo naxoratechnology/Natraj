@@ -16,6 +16,9 @@ app.use(helmet());
 app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
+app.get('/', (req, res) => {
+  res.type('html').send('<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Natraj Finance API</title></head><body><strong>💰 Natraj Finance API is running.....</strong></body></html>');
+});
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRouter);
 app.use('/api/dealers', dealerRouter);
